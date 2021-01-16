@@ -15,7 +15,7 @@ _blitzer_app_headers = {
     "X-Requested-Width": "de.blitzer.plus"
 }
 
-# eg. https://cdn2.atudo.net/api/3.0/?type=0,1,2,3,4,5,6&z=7&box=48.369631,1.356501,53.838,20.231013
+# eg. https://cdn2.atudo.net/api/3.0/?type=0,1,2,3,4,5,6&z=11&box=48.392979,8.437491,48.753712,9.617148
 _url_mask = "https://cdn2.atudo.net/api/3.0/?type=0,1,2,3,4,5,6&z=12&box={},{},{},{}"
 
 
