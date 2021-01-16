@@ -1,8 +1,10 @@
 import asyncio
-from bbox import BBox
-import blitzer_downloader
 import time
 import sys
+
+from bbox import BBox
+import speedcam_downloader
+
 
 
 async def main():
@@ -12,7 +14,7 @@ async def main():
 
     time_start = time.perf_counter()
 
-    speedcams = await blitzer_downloader.download_speedcams(tiles)
+    speedcams = await speedcam_downloader.download_speedcams(tiles)
 
     elapsed = (time.perf_counter() - time_start)
     rps = len(tiles) / elapsed
