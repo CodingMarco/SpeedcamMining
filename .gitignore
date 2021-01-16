@@ -1,0 +1,9 @@
+*.sqlite
+*.db
+*.png
+*.jpg
+*.jpeg
+*.json
+json
+.idea
+
