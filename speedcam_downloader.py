@@ -1,6 +1,7 @@
 import asyncio
 from aiohttp import ClientSession
 import json
+from retrying import retry
 
 _blitzer_app_headers = {
     "Host": "cdn2.atudo.net",
@@ -28,7 +29,25 @@ def has_speedcams(response: str):
     return not response.startswith('{"pois":[]')
 
 
-async def download_speedcams(tiles):
+def filter_by_country_code(speedcams, country_code):
+    filtered_speedcams = list()
+
+    for speedcam in speedcams:
+        if "address" in speedcam:
+            if "country" in speedcam["address"]:
+                if speedcam["address"]["country"] == country_code:
+                    filtered_speedcams.append(speedcam)
+
+    return filtered_speedcams
+
+
+def sort_by_id(speedcams):
+    sorted_speedcams = sorted(speedcams, key=lambda speedcam: int(speedcam["id"]))
+    return sorted_speedcams
+
+
+@retry
+async def download_speedcams(tiles, country_code):
     urls = list()
     for tile in tiles:
         urls.append(_url_mask.format(tile.south, tile.west, tile.north, tile.east))
@@ -48,4 +67,4 @@ async def download_speedcams(tiles):
         if has_speedcams(response_str):
             speedcams += json.loads(response_str)['pois']
 
-    return speedcams
+    return sort_by_id(filter_by_country_code(speedcams, country_code))
