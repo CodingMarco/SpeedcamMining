@@ -4,6 +4,7 @@
 *.jpg
 *.jpeg
 *.json
+*.txt
 json
 .idea
 __pycache__
