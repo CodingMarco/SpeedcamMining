@@ -5,7 +5,7 @@
 *.jpeg
 *.json
 *.txt
-out
+out*
 json
 .idea
 __pycache__

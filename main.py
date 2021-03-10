@@ -12,8 +12,8 @@ logfile = open("log.txt", "w")
 
 def write_log(text):
     now = datetime.now()
-    logfile.writelines([now.strftime("%d.%m.%Y, %H:%M:%S Uhr    |    ") + text + "\n"])
-    logfile.flush()
+    #logfile.writelines([now.strftime("%d.%m.%Y, %H:%M:%S Uhr    |    ") + text + "\n"])
+    #logfile.flush()
     print(now.strftime("%d.%m.%Y, %H:%M:%S Uhr    |    ") + text + "\n")
 
 
@@ -22,26 +22,31 @@ async def main():
 
     tiles = bbox_de.get_children_bboxes(12)  # Optimal: 12
 
-    for i in range(1000000, 1000100):
-        try:
-            jsonfile = open("out/speedcams_{}.json".format(i), "w")
+    for i in range(1001770, 1999999):
+        fetched = False
+        while not fetched:
+            try:
+                jsonfile = open("out/speedcams_{}.json".format(i), "w")
 
-            time_start = time.perf_counter()
+                time_start = time.perf_counter()
 
-            speedcams = await speedcam_downloader.download_speedcams(tiles, "DE")
+                speedcams = await speedcam_downloader.download_speedcams(tiles, "DE")
 
-            elapsed = (time.perf_counter() - time_start)
-            rps = len(tiles) / elapsed
+                elapsed = (time.perf_counter() - time_start)
+                rps = len(tiles) / elapsed
 
-            write_log("Fetched {} tiles / {} speedcams in {} seconds; {} tiles/second;".format(len(tiles), len(speedcams), elapsed, rps))
+                write_log(
+                    "Fetched {} tiles / {} speedcams in {} seconds; {} tiles/second;".format(len(tiles), len(speedcams),
+                                                                                             elapsed, rps))
 
-            json_string = json.dumps(speedcams, indent=4, ensure_ascii=False)
-            jsonfile.write(json_string)
-            jsonfile.close()
+                json_string = json.dumps(speedcams, separators=(',', ':'), ensure_ascii=False)
+                jsonfile.write(json_string)
+                jsonfile.close()
 
-            time.sleep(10)
-        except Exception as ex:
-            print("Error: " + str(ex))
+                fetched = True
+            except Exception as ex:
+                write_log("Error: " + str(ex))
+            time.sleep(15 * 60)
 
 
 if __name__ == '__main__':
