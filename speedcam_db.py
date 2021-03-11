@@ -92,48 +92,26 @@ class SpeedcamDB:
 
         for json_speedcam in json_speedcams:
             tuples.append((
-                json_speedcam["content"],
-                json_speedcam["lat"],
-                json_speedcam["lng"],
-                json_speedcam["backend"],
-                json_speedcam["id"],
-                json_speedcam["address"]["country"],
-                json_speedcam["address"]["state"][3:5],
-                json_speedcam["address"]["zip_code"],
-                json_speedcam["address"]["city"],
-                json_speedcam["type"],
-                json_speedcam["vmax"] if json_speedcam["vmax"] != "" else None,
-                json_speedcam["counter"],
-                parse(json_speedcam["create_date"], dayfirst=True, yearfirst=False),  # create_date
-                parse(json_speedcam["confirm_date"], dayfirst=True, yearfirst=False),  # confirm_date
+                self._get_json_value_if_exists(json_speedcam, ["content"]),
+                self._get_json_value_if_exists(json_speedcam, ["lat"]),
+                self._get_json_value_if_exists(json_speedcam, ["lng"]),
+                self._get_json_value_if_exists(json_speedcam, ["backend"]),
+                self._get_json_value_if_exists(json_speedcam, ["id"]),
+                self._get_json_value_if_exists(json_speedcam, ["address", "country"]),
+                self._get_state_code(json_speedcam),
+                self._get_json_value_if_exists(json_speedcam, ["address", "zip_code"]),
+                self._get_json_value_if_exists(json_speedcam, ["address", "city"]),
+                self._get_json_value_if_exists(json_speedcam, ["type"]),
+                self._get_json_value_if_exists(json_speedcam, ["vmax"]),
+                self._get_json_value_if_exists(json_speedcam, ["counter"]),
+                parse(self._get_json_value_if_exists(json_speedcam, ["create_date"]), dayfirst=True, yearfirst=False),
+                parse(self._get_json_value_if_exists(json_speedcam, ["confirm_date"]), dayfirst=True, yearfirst=False),
                 None,  # removed date
-                self._get_partly_fixed(json_speedcam),
-                self._get_reason(json_speedcam)
+                self._get_json_value_if_exists(json_speedcam, ["info", "partly_fixed"]),
+                self._get_json_value_if_exists(json_speedcam, ["info", "reason"]),
             ))
 
         return tuples
-
-    def _get_partly_fixed(self, json_speedcam):
-        if "info" not in json_speedcam:
-            return None
-        if type(json_speedcam["info"]) is bool:
-            return None
-        if "partly_fixed" not in json_speedcam["info"]:
-            return None
-
-        return json_speedcam["info"]["partly_fixed"]
-
-    def _get_reason(self, json_speedcam):
-        if "info" not in json_speedcam:
-            return None
-        if type(json_speedcam["info"]) is bool:
-            return None
-        if "reason" not in json_speedcam["info"]:
-            return None
-        if json_speedcam["info"]["reason"] == "":
-            return None
-
-        return json_speedcam["info"]["reason"]
 
     def _get_json_value_if_exists(self, json, path: list):
         for node in path:
@@ -147,7 +125,13 @@ class SpeedcamDB:
 
         return json
 
+    def _get_state_code(self, json_speedcam):
+        state_code = self._get_json_value_if_exists(json_speedcam, ["address", "state"])
 
+        if state_code is not None:
+            return state_code[3:5]
+        else:
+            return None
 
 
 def main():
